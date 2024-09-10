@@ -90,7 +90,7 @@ int main(){
 */
 void hybridSort(int* ptr, int threshold, int s, int e){
     if(e-s <= 0) return;
-    else if(e-s <= threshold) insertionSort(ptr, s, e);
+    else if(e-s <= threshold) insertionSort(ptr, s, e+1);
     else{
         int mid = (s+e)/2;
         hybridSort(ptr, threshold, s, mid);
