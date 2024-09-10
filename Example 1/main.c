@@ -32,74 +32,56 @@ long long keyComparison;
 
 int main(){
     // address of the block created hold by this pointer
-    int size, max, threshold;
+    int size, max, choice, threshold;
+    int* ptr, tempPtr;
     clock_t t;
+    while(1){
+        // Size of the array
+        printf("Enter size of elements:");
+        scanf("%d", &size);
+        printf("Enter largest number(x):");
+        scanf("%d", &max);
+        ptr = generateArr(size, max);
+        //printf("\nOriginal:");
+        //printArr(ptr, size);
 
-    // Size of the array
-    printf("Enter size of elements:");
-    scanf("%d", &size);
-    printf("Enter largest number(x):");
-    scanf("%d", &max);
-    printf("Enter threshold:");
-    scanf("%d", &threshold);
+        printf("1: Insertion Sort\n2: Merge Sort\n3: Hybrid Sort\nPlease enter choice:");
+        scanf("%d", &choice);
+        while(choice != 4){
+            if(choice == 3){
+                printf("Enter threshold:");
+                scanf("%d", &threshold);
+            }
 
-    int *ptr = generateArr(size, max);
-    //printf("\nOriginal:");
-    //printArr(ptr, size);
+            tempPtr = copyArr(ptr, size);
+            keyComparison = 0LL;
+            t = clock();
+            switch(choice){
+                case 1: printf("\ninsertionSort()\n");
+                        insertionSort(tempPtr, 0, size);
+                        break;
+                case 2: printf("\nmergeSort()\n");
+                        mergeSort(tempPtr, 0, size-1);
+                        break;
+                case 3: printf("\nhybridSort()\n");
+                        hybridSort(tempPtr, threshold, 0, size-1);
+                        break;
 
-    printf("\ninsertionSort()\n");
-    int* tempIS = copyArr(ptr, size);
-    keyComparison = 0LL;
-    t = clock();
-    insertionSort(tempIS, 0, size);
-    t = clock() - t;
-    printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-    //printArr(tempIS, size);
+            }
+            t = clock() - t;
+            printf("Array Size: %d, Largest Number: %d", size, max);
+            if(choice == 3) printf(", Threshold: %d", threshold);
+            printf("\n");
+            printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n\n\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
+            printf("1: Insertion Sort\n2: Merge Sort\n3: Hybrid Sort\n4: Reset Array\n5: Exit\nPlease enter choice:");
+            scanf("%d", &choice);
+            free(tempPtr);
+            if(choice == 5) break;
+        }
+        free(ptr);
+        if(choice == 5) break;
+    }
 
-    printf("insertionSort() 2\n");
-    keyComparison = 0LL;
-    t = clock();
-    insertionSort(tempIS, 0, size);
-    t = clock() - t;
-    printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-    //printArr(tempIS, size);
-
-
-    printf("\nmergeSort()\n");
-    int* tempMS = copyArr(ptr, size);
-    keyComparison = 0LL;
-    t = clock();
-    mergeSort(tempMS, 0, size-1);
-    t = clock() - t;
-    printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-    //printArr(tempMS, size);
-
-    printf("mergeSort() 2\n");
-    keyComparison = 0LL;
-    t = clock();
-    mergeSort(tempMS, 0, size-1);
-    t = clock() - t;
-    printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-    //printArr(tempMS, size);
-
-    printf("\nhybridSort()\n");
-    int* tempHB = copyArr(ptr,size);
-    keyComparison = 0LL;
-    t = clock();
-    hybridSort(tempHB, threshold, 0, size-1);
-    t = clock() - t;
-    printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-    //printArr(tempHB, size);
-
-    printf("hybridSort() 2\n");
-    keyComparison = 0LL;
-    t = clock();
-    hybridSort(tempHB, threshold, 0, size-1);
-    t = clock() - t;
-    printf("Number of key comparison: %lld\nTime Elapsed:%f seconds\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-    //printArr(tempHB, size);
-
-    free(ptr);
     return 0;
 }
 
@@ -107,7 +89,8 @@ int main(){
 (a) Algorithm implementation: Implement the above hybrid algorithm.
 */
 void hybridSort(int* ptr, int threshold, int s, int e){
-    if(e-s<= threshold) insertionSort(ptr, s, e);
+    if(e-s <= 0) return;
+    else if(e-s <= threshold) insertionSort(ptr, s, e);
     else{
         int mid = (s+e)/2;
         hybridSort(ptr, threshold, s, mid);
@@ -177,7 +160,7 @@ int compare(int value1, int value2){
 /*
 (b) Generate input data: Generate arrays of increasing sizes, in a range from
 1,000 to 10 million. For each of the sizes, generate a random dataset of integers
-in the range of [1, …, x], where x is the largest number you allow for your
+in the range of [1, â€¦, x], where x is the largest number you allow for your
 datasets.
 */
 //https://www.geeksforgeeks.org/dynamic-array-in-c/
