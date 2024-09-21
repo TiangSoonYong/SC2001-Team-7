@@ -90,7 +90,7 @@ int main(){
 */
 void hybridSort(int* ptr, int threshold, int s, int e){
     if(e-s <= 0) return;
-    else if(e-s <= threshold) insertionSort(ptr, s, e);
+    else if(e-s+1 <= threshold) insertionSort(ptr, s, e);
     else{
         int mid = (s+e)/2;
         hybridSort(ptr, threshold, s, mid);
@@ -135,7 +135,7 @@ void merge(int* ptr, int s, int e){
 } // end of merge
 
 void insertionSort (int* ptr, int s, int e){
-    for (int i=s+1; i <= e; i++){
+    for (int i=s+1; i<e+1; i++){
         for (int j=i; j > s; j--){
             if (compare(ptr[j], ptr[j-1]) < 0)
                 swap(ptr, j, j-1);
