@@ -18,8 +18,6 @@ void mergeSortOriginal(int* ptr, int s, int e);
 // Admin functions
 int* generateArr(int size, int max);
 int* copyArr(int* ptr, int s, int e);
-void printArr(int* ptr, int size);
-void checkArr(int* ptr, int size);
 
 // Global variable for key comparisons
 long long keyComparison;
@@ -31,9 +29,9 @@ int main() {
     clock_t t;
 
     while(1) {
-        printf("Enter size of elements:");
+        printf("Enter size of elements: ");
         scanf("%d", &size);
-        printf("Enter largest number (x):");
+        printf("Enter largest number (x): ");
         scanf("%d", &max);
 
         ptr = generateArr(size, max);
@@ -105,14 +103,6 @@ int main() {
                 printf("Number of key comparisons: %lld\nTime Elapsed: %f seconds\n\n", keyComparison, ((double)t) / CLOCKS_PER_SEC);
 
                 free(tempPtr);  // Free the dynamically allocated memory for tempPtr
-            }
-
-            // Option to print the sorted array
-            char showSorted;
-            printf("Do you want to print the sorted array? (y/n): ");
-            scanf(" %c", &showSorted);
-            if (showSorted == 'y' || showSorted == 'Y') {
-                printArr(tempPtr, size);
             }
 
             printf("\nSorting Options:\n");
@@ -246,23 +236,6 @@ int* generateArr(int size, int max){
     }
 
     return ptr;
-}
-
-void printArr(int* ptr, int size){
-    for (int i = 0; i < size; ++i) {
-        printf("%d, ", ptr[i]);
-    }
-    printf("\n");
-}
-
-void checkArr(int* ptr, int size){
-    for (int i = 1; i < size; ++i) {
-        if(ptr[i] < ptr[i-1]){
-            printf("Unsorted\n");
-            return;
-        }
-    }
-    printf("Sorted\n");
 }
 
 int* copyArr(int* ptr, int s, int e){
