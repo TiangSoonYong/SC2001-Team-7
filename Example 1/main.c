@@ -58,7 +58,7 @@ int main(){
             t = clock();
             switch(choice){
                 case 1: printf("\ninsertionSort()\n");
-                        insertionSort(tempPtr, 0, size);
+                        insertionSort(tempPtr, 0, size-1);
                         break;
                 case 2: printf("\nmergeSort()\n");
                         mergeSort(tempPtr, 0, size-1);
