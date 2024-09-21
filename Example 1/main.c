@@ -12,12 +12,12 @@ the algorithm will switch to Insertion Sort, which is efficient for small-sized 
 */
 
 //Function prototype for sorting
-void hybridSort(int* ptr, int threshold, int s, int e, int inplace);
+void hybridSort(int* ptr, int threshold, int s, int e);
 void mergeFast(int* ptr, int n, int m);
 int inplace = 0;
 
 
-void mergeSort(int* ptr, int s, int e, int inplace);
+void mergeSort(int* ptr, int s, int e);
 void merge(int* ptr, int n, int m);
 
 void insertionSort (int* ptr, int s, int e);
@@ -65,10 +65,10 @@ int main(){
                         insertionSort(tempPtr, 0, size-1);
                         break;
                 case 2: printf("\nmergeSort()\n");
-                        mergeSort(tempPtr, 0, size-1, inplace);
+                        mergeSort(tempPtr, 0, size-1);
                         break;
                 case 3: printf("\nhybridSort()\n");
-                        hybridSort(tempPtr, threshold, 0, size-1, inplace);
+                        hybridSort(tempPtr, threshold, 0, size-1);
                         break;
 
             }
@@ -92,23 +92,23 @@ int main(){
 /*
 (a) Algorithm implementation: Implement the above hybrid algorithm.
 */
-void hybridSort(int* ptr, int threshold, int s, int e, int inplace){
+void hybridSort(int* ptr, int threshold, int s, int e){
     if(e-s <= 0) return;
     else if(e-s+1 <= threshold) insertionSort(ptr, s, e);
     else{
         int mid = (s+e)/2;
-        hybridSort(ptr, threshold, s, mid, inplace);
-        hybridSort(ptr, threshold, mid+1, e, inplace);
+        hybridSort(ptr, threshold, s, mid);
+        hybridSort(ptr, threshold, mid+1, e);
         if(inplace) merge(ptr, s, e);
         else mergeFast(ptr, s, e);
     }
 }
 
-void mergeSort(int* ptr, int s, int e, int inplace){// s=start, e=end
+void mergeSort(int* ptr, int s, int e){// s=start, e=end
     if (e-s <= 0) return;
     int mid = (s+e)/2;
-    mergeSort(ptr, s, mid, inplace);
-    mergeSort(ptr, mid+1, e, inplace);
+    mergeSort(ptr, s, mid);
+    mergeSort(ptr, mid+1, e);
     if(inplace) merge(ptr, s, e);
     else mergeFast(ptr, s, e);
 }
