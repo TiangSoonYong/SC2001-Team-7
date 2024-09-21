@@ -12,22 +12,26 @@ void insertionSort (int* ptr, int s, int e);
 void swap(int* ptr, int index1, int index2);
 int compare(int value1, int value2);
 
+// Original Merge Sort functions
+void mergeOriginal(int* ptr, int s, int mid, int e);
+void mergeSortOriginal(int* ptr, int s, int e);
+
 // Admin functions
 int* generateArr(int size, int max);
 int* copyArr(int* ptr, int s, int e);
 void printArr(int* ptr, int size);
 void checkArr(int* ptr, int size);
 
-// Global
+// Global variable for key comparisons
 long long keyComparison;
 
-int main(){
+int main() {
     int size, max, choice, threshold;
     int* ptr;
-    int* tempPtr;  // corrected this to be a pointer
+    int* tempPtr;  // Temporary array for sorting
     clock_t t;
 
-    while(1){
+    while(1) {
         printf("Enter size of elements:");
         scanf("%d", &size);
         printf("Enter largest number (x):");
@@ -35,50 +39,77 @@ int main(){
 
         ptr = generateArr(size, max);
 
-        printf("1: Insertion Sort\n2: Merge Sort\n3: Hybrid Sort\nPlease enter choice:");
+        printf("1: Insertion Sort\n2: Merge Sort (Original)\n3: Merge Sort (Hybrid)\n4: Compare both\nPlease enter choice:");
         scanf("%d", &choice);
 
-        while(choice != 4){
-            if(choice == 3){
+        while (choice != 5) {
+            if (choice == 3 || choice == 4) {
                 printf("Enter threshold:");
                 scanf("%d", &threshold);
             }
 
-            tempPtr = copyArr(ptr, 0, size-1);  // Allocate temporary array for sorting
-            keyComparison = 0LL;
-            t = clock();
+            if (choice == 4) {
+                // Compare both original and hybrid sort
+                printf("\nComparing Original Merge Sort and Hybrid Merge Sort...\n");
 
-            switch(choice){
-                case 1:
-                    printf("\ninsertionSort()\n");
-                    insertionSort(tempPtr, 0, size-1);
-                    break;
-                case 2:
-                    printf("\nmergeSort()\n");
-                    mergeSort(tempPtr, 0, size-1, 0);
-                    break;
-                case 3:
-                    printf("\nhybridSort()\n");
-                    hybridSort(tempPtr, threshold, 0, size-1, 0);
-                    break;
+                // Original Merge Sort
+                tempPtr = copyArr(ptr, 0, size - 1);
+                keyComparison = 0LL;
+                t = clock();
+                mergeSortOriginal(tempPtr, 0, size - 1);
+                t = clock() - t;
+                printf("Original Merge Sort:\n");
+                printf("Number of key comparisons: %lld\nTime Elapsed: %f seconds\n\n", keyComparison, ((double)t) / CLOCKS_PER_SEC);
+                free(tempPtr);
+
+                // Hybrid Merge Sort
+                tempPtr = copyArr(ptr, 0, size - 1);
+                keyComparison = 0LL;
+                t = clock();
+                hybridSort(tempPtr, threshold, 0, size - 1, 0);
+                t = clock() - t;
+                printf("Hybrid Merge Sort:\n");
+                printf("Number of key comparisons: %lld\nTime Elapsed: %f seconds\n\n", keyComparison, ((double)t) / CLOCKS_PER_SEC);
+                free(tempPtr);
+            } else {
+                // Single sort (Insertion, Merge, or Hybrid)
+                tempPtr = copyArr(ptr, 0, size - 1);  // Allocate temporary array for sorting
+                keyComparison = 0LL;
+                t = clock();
+
+                switch (choice) {
+                    case 1:
+                        printf("\ninsertionSort()\n");
+                        insertionSort(tempPtr, 0, size - 1);
+                        break;
+                    case 2:
+                        printf("\nmergeSortOriginal()\n");
+                        mergeSortOriginal(tempPtr, 0, size - 1);
+                        break;
+                    case 3:
+                        printf("\nhybridSort()\n");
+                        hybridSort(tempPtr, threshold, 0, size - 1, 0);
+                        break;
+                }
+
+                t = clock() - t;
+
+                printf("Array Size: %d, Largest Number: %d", size, max);
+                if (choice == 3 || choice == 4) printf(", Threshold: %d", threshold);
+                printf("\n");
+                printf("Number of key comparisons: %lld\nTime Elapsed: %f seconds\n\n", keyComparison, ((double)t) / CLOCKS_PER_SEC);
+
+                free(tempPtr);  // Free the dynamically allocated memory for tempPtr
             }
 
-            t = clock() - t;
-
-            printf("Array Size: %d, Largest Number: %d", size, max);
-            if(choice == 3) printf(", Threshold: %d", threshold);
-            printf("\n");
-            printf("Number of key comparisons: %lld\nTime Elapsed: %f seconds\n\n", keyComparison, ((double)t)/CLOCKS_PER_SEC);
-
-            printf("1: Insertion Sort\n2: Merge Sort\n3: Hybrid Sort\n4: Reset Array\n5: Exit\nPlease enter choice:");
+            printf("1: Insertion Sort\n2: Merge Sort (Original)\n3: Merge Sort (Hybrid)\n4: Compare both\n5: Reset Array\n6: Exit\nPlease enter choice:");
             scanf("%d", &choice);
 
-            free(tempPtr);  // Free the dynamically allocated memory for tempPtr
-            if(choice == 5) break;
+            if (choice == 6) break;
         }
 
         free(ptr);  // Free memory allocated for the original array
-        if(choice == 5) break;
+        if (choice == 6) break;
     }
 
     return 0;
@@ -142,7 +173,6 @@ void mergeFast(int* ptr, int s, int e){
     int* right = copyArr(ptr, mid + 1, e);
     int l = 0, r = 0, i = s;
 
-    // Fixed off-by-one errors
     while (l < mid - s + 1 && r < e - mid) {
         int cmp = compare(left[l], right[r]);
         if (cmp >= 0) ptr[i++] = right[r++];
@@ -220,4 +250,66 @@ int* copyArr(int* ptr, int s, int e){
         temp[i] = ptr[s + i];
     }
     return temp;
+}
+
+/* Original Merge Sort Implementation */
+void mergeOriginal(int* ptr, int s, int mid, int e){
+    int n1 = mid - s + 1;  // Size of the left subarray
+    int n2 = e - mid;      // Size of the right subarray
+
+    // Create temporary arrays for the left and right subarrays
+    int* L = (int*)malloc(n1 * sizeof(int));
+    int* R = (int*)malloc(n2 * sizeof(int));
+
+    // Copy data to temp arrays L[] and R[]
+    for (int i = 0; i < n1; i++) L[i] = ptr[s + i];
+    for (int i = 0; i < n2; i++) R[i] = ptr[mid + 1 + i];
+
+    // Merge the temporary arrays back into the original array
+    int i = 0;  // Initial index of left subarray
+    int j = 0;  // Initial index of right subarray
+    int k = s;  // Initial index of the merged subarray
+
+    while (i < n1 && j < n2) {
+        keyComparison++;  // Count comparison
+        if (L[i] <= R[j]) {
+            ptr[k] = L[i];
+            i++;
+        } else {
+            ptr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of L[], if any
+    while (i < n1) {
+        ptr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of R[], if any
+    while (j < n2) {
+        ptr[k] = R[j];
+        j++;
+        k++;
+    }
+
+    // Free the temporary arrays
+    free(L);
+    free(R);
+}
+
+void mergeSortOriginal(int* ptr, int s, int e){
+    if (s < e) {
+        int mid = s + (e - s) / 2;
+
+        // Sort the left and right halves
+        mergeSortOriginal(ptr, s, mid);
+        mergeSortOriginal(ptr, mid + 1, e);
+
+        // Merge the sorted halves
+        mergeOriginal(ptr, s, mid, e);
+    }
 }
