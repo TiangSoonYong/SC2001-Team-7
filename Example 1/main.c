@@ -16,7 +16,6 @@ void hybridSort(int* ptr, int threshold, int s, int e);
 void mergeFast(int* ptr, int n, int m);
 int inplace = 0;
 
-
 void mergeSort(int* ptr, int s, int e);
 void merge(int* ptr, int n, int m);
 
@@ -183,7 +182,7 @@ int compare(int value1, int value2){
 /*
 (b) Generate input data: Generate arrays of increasing sizes, in a range from
 1,000 to 10 million. For each of the sizes, generate a random dataset of integers
-in the range of [1, …, x], where x is the largest number you allow for your
+in the range of [1, â€¦, x], where x is the largest number you allow for your
 datasets.
 */
 //https://www.geeksforgeeks.org/dynamic-array-in-c/
