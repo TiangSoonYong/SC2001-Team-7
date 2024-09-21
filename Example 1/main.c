@@ -12,9 +12,12 @@ the algorithm will switch to Insertion Sort, which is efficient for small-sized 
 */
 
 //Function prototype for sorting
-void hybridSort(int* ptr, int threshold, int s, int e);
+void hybridSort(int* ptr, int threshold, int s, int e, int inplace);
+void mergeFast(int* ptr, int n, int m);
+int inplace = 0;
 
-void mergeSort(int* ptr, int s, int e);
+
+void mergeSort(int* ptr, int s, int e, int inplace);
 void merge(int* ptr, int n, int m);
 
 void insertionSort (int* ptr, int s, int e);
@@ -24,8 +27,9 @@ int compare(int value1, int value2);
 
 //Admin functions
 int* generateArr(int size, int max);
+int* copyArr(int* ptr, int size, int s);
 void printArr(int* ptr, int size);
-int* copyArr(int* ptr, int size);
+void checkArr(int* ptr, int size);
 
 //Global
 long long keyComparison;
@@ -53,7 +57,7 @@ int main(){
                 scanf("%d", &threshold);
             }
 
-            tempPtr = copyArr(ptr, size);
+            tempPtr = copyArr(ptr, 0, size-1);
             keyComparison = 0LL;
             t = clock();
             switch(choice){
@@ -61,10 +65,10 @@ int main(){
                         insertionSort(tempPtr, 0, size-1);
                         break;
                 case 2: printf("\nmergeSort()\n");
-                        mergeSort(tempPtr, 0, size-1);
+                        mergeSort(tempPtr, 0, size-1, inplace);
                         break;
                 case 3: printf("\nhybridSort()\n");
-                        hybridSort(tempPtr, threshold, 0, size-1);
+                        hybridSort(tempPtr, threshold, 0, size-1, inplace);
                         break;
 
             }
@@ -88,23 +92,25 @@ int main(){
 /*
 (a) Algorithm implementation: Implement the above hybrid algorithm.
 */
-void hybridSort(int* ptr, int threshold, int s, int e){
+void hybridSort(int* ptr, int threshold, int s, int e, int inplace){
     if(e-s <= 0) return;
     else if(e-s+1 <= threshold) insertionSort(ptr, s, e);
     else{
         int mid = (s+e)/2;
-        hybridSort(ptr, threshold, s, mid);
-        hybridSort(ptr, threshold, mid+1, e);
-        merge(ptr, s, e);
+        hybridSort(ptr, threshold, s, mid, inplace);
+        hybridSort(ptr, threshold, mid+1, e, inplace);
+        if(inplace) merge(ptr, s, e);
+        else mergeFast(ptr, s, e);
     }
 }
 
-void mergeSort(int* ptr, int s, int e){// s=start, e=end
+void mergeSort(int* ptr, int s, int e, int inplace){// s=start, e=end
     if (e-s <= 0) return;
     int mid = (s+e)/2;
-    mergeSort(ptr, s, mid);
-    mergeSort(ptr, mid+1, e);
-    merge(ptr, s, e);
+    mergeSort(ptr, s, mid, inplace);
+    mergeSort(ptr, mid+1, e, inplace);
+    if(inplace) merge(ptr, s, e);
+    else mergeFast(ptr, s, e);
 }
 
 
@@ -134,6 +140,23 @@ void merge(int* ptr, int s, int e){
     } // end of while loop;
 } // end of merge
 
+void mergeFast(int* ptr, int s, int e){
+    if (e-s <= 0) return;
+    int mid = (s+e)/2;
+    int* left = copyArr(ptr,s,mid);
+    int* right = copyArr(ptr,mid+1,e);
+    int l = 0,r = 0;
+    int i = s;
+
+    while (l <= mid-s && r <= e-(mid+1)) {
+        int cmp = compare(left[l], right[r]);
+        if (cmp >= 0)ptr[i++] = right[r++];
+        if (cmp <= 0)ptr[i++] = left[l++];
+    }
+    while (l <= mid-s)ptr[i++] = left[l++];
+    while (r <= e-(mid+1))ptr[i++] = right[r++];
+}
+
 void insertionSort (int* ptr, int s, int e){
     for (int i=s+1; i<e+1; i++){
         for (int j=i; j > s; j--){
@@ -160,7 +183,7 @@ int compare(int value1, int value2){
 /*
 (b) Generate input data: Generate arrays of increasing sizes, in a range from
 1,000 to 10 million. For each of the sizes, generate a random dataset of integers
-in the range of [1, â€¦, x], where x is the largest number you allow for your
+in the range of [1, …, x], where x is the largest number you allow for your
 datasets.
 */
 //https://www.geeksforgeeks.org/dynamic-array-in-c/
@@ -197,10 +220,23 @@ void printArr(int* ptr, int size){
     printf("\n\n");
 }
 
-int* copyArr(int* ptr, int size){
-    int *temp = (int*)malloc(size * sizeof(int));
-    for (int i = 0; i < size; ++i){
-        temp[i] = ptr[i];
+void checkArr(int* ptr, int size){
+    for (int i = 1; i < size; ++i) {
+        if(ptr[i] < ptr[i-1]){
+            printf("Unsorted\n");
+            return;
+        }
+    }
+    printf("Sorted\n");
+}
+
+int* copyArr(int* ptr, int s, int e){
+    int *temp = (int*)malloc((e-s+1) * sizeof(int));
+    int i = 0;
+    while(s<=e){
+        temp[i] = ptr[s];
+        i++;
+        s++;
     }
     return temp;
 }
