@@ -135,7 +135,7 @@ void merge(int* ptr, int s, int e){
 } // end of merge
 
 void insertionSort (int* ptr, int s, int e){
-    for (int i=s+1; i < e; i++){
+    for (int i=s+1; i <= e; i++){
         for (int j=i; j > s; j--){
             if (compare(ptr[j], ptr[j-1]) < 0)
                 swap(ptr, j, j-1);
