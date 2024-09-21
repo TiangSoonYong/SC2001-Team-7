@@ -3,7 +3,6 @@
 #include <time.h>
 
 /* Hybrid Mergesort with Insertion Sort for better efficiency */
-
 void hybridSort(int* ptr, int threshold, int s, int e, int inplace);
 void mergeFast(int* ptr, int s, int e);
 void merge(int* ptr, int s, int e);
@@ -39,12 +38,18 @@ int main() {
 
         ptr = generateArr(size, max);
 
-        printf("1: Insertion Sort\n2: Merge Sort (Original)\n3: Merge Sort (Hybrid)\n4: Compare both\nPlease enter choice:");
+        printf("\nSorting Options:\n");
+        printf("1: Insertion Sort\n");
+        printf("2: Merge Sort (Original)\n");
+        printf("3: Merge Sort (Hybrid)\n");
+        printf("4: Compare both\n");
+        printf("5: Exit\n");
+        printf("Please enter your choice: ");
         scanf("%d", &choice);
 
         while (choice != 5) {
             if (choice == 3 || choice == 4) {
-                printf("Enter threshold:");
+                printf("Enter threshold for hybrid sort: ");
                 scanf("%d", &threshold);
             }
 
@@ -102,7 +107,22 @@ int main() {
                 free(tempPtr);  // Free the dynamically allocated memory for tempPtr
             }
 
-            printf("1: Insertion Sort\n2: Merge Sort (Original)\n3: Merge Sort (Hybrid)\n4: Compare both\n5: Reset Array\n6: Exit\nPlease enter choice:");
+            // Option to print the sorted array
+            char showSorted;
+            printf("Do you want to print the sorted array? (y/n): ");
+            scanf(" %c", &showSorted);
+            if (showSorted == 'y' || showSorted == 'Y') {
+                printArr(tempPtr, size);
+            }
+
+            printf("\nSorting Options:\n");
+            printf("1: Insertion Sort\n");
+            printf("2: Merge Sort (Original)\n");
+            printf("3: Merge Sort (Hybrid)\n");
+            printf("4: Compare both\n");
+            printf("5: Reset Array\n");
+            printf("6: Exit\n");
+            printf("Please enter your choice: ");
             scanf("%d", &choice);
 
             if (choice == 6) break;
@@ -188,12 +208,13 @@ void mergeFast(int* ptr, int s, int e){
 
 void insertionSort (int* ptr, int s, int e){
     for (int i = s + 1; i <= e; i++){
-        for (int j = i; j > s; j--){
-            if (compare(ptr[j], ptr[j-1]) < 0)
-                swap(ptr, j, j-1);
-            else
-                break;
+        int current = ptr[i];
+        int j = i - 1;
+        while (j >= s && compare(ptr[j], current) > 0) {
+            ptr[j + 1] = ptr[j];  // Shift elements to the right
+            j--;
         }
+        ptr[j + 1] = current;  // Place current element in the correct position
     }
 }
 
@@ -204,8 +225,8 @@ void swap(int* ptr, int index1, int index2){
 }
 
 int compare(int value1, int value2){
-    keyComparison++;
-    if(value1 > value2) return 1;
+    keyComparison++;  // Always count comparisons
+    if (value1 > value2) return 1;
     else if (value1 < value2) return -1;
     else return 0;
 }
@@ -245,8 +266,14 @@ void checkArr(int* ptr, int size){
 }
 
 int* copyArr(int* ptr, int s, int e){
-    int *temp = (int*)malloc((e - s + 1) * sizeof(int));
-    for (int i = 0; i <= e - s; i++) {
+    int size = e - s + 1;
+    int *temp = (int*)malloc(size * sizeof(int));  // Allocate memory for the copy
+    if (temp == NULL) {
+        printf("Memory not allocated.\n");
+        return NULL;
+    }
+    // Copy elements from original array
+    for (int i = 0; i < size; i++) {
         temp[i] = ptr[s + i];
     }
     return temp;
